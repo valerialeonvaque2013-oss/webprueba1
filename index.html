@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AudioSistemas ProEvent | Pantallas LED, Sonido e Iluminación</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#18181b',
+                            card: '#27272a',
+                            border: '#3f3f46',
+                            silver: '#e4e4e7',
+                            gray: '#a1a1aa'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                        heading: ['Orbitron', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .gradient-text {
+            background: linear-gradient(135deg, #ffffff 0%, #d4d4d8 50%, #71717a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .text-glow {
+            text-shadow: 0 0 25px rgba(255, 255, 255, 0.35), 0 0 50px rgba(255, 255, 255, 0.15);
+        }
+        .animated-gradient {
+            background: linear-gradient(90deg, #ffffff, #a1a1aa, #ffffff, #e4e4e7);
+            background-size: 200% auto;
+            color: #fff;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 4s linear infinite;
+        }
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+        .bg-grid-pattern {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        /* Ambient Touch/Mouse Spotlight Glow */
+        #mouseGlow {
+            pointer-events: none;
+            position: fixed;
+            width: 380px;
+            height: 380px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 45%, transparent 75%);
+            transform: translate(-50%, -50%);
+            transition: width 0.3s ease, height 0.3s ease, opacity 0.5s ease;
+            z-index: 9999;
+        }
+
+        /* Dynamic Logo Styling & Animations */
+        .logo-box {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .logo-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 40%,
+                rgba(255, 255, 255, 0.18) 50%,
+                transparent 60%
+            );
+            transform: rotate(30deg) translateX(-100%);
+            transition: transform 0.8s ease;
+            pointer-events: none;
+        }
+        .logo-box:hover::before {
+            transform: rotate(30deg) translateX(100%);
+        }
+        .logo-glow {
+            animation: logoPulse 4s ease-in-out infinite alternate;
+        }
+        @keyframes logoPulse {
+            0% {
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0,0,0,0.5);
+                border-color: rgba(63, 63, 70, 0.6);
+            }
+            100% {
+                box-shadow: 0 0 25px rgba(255, 255, 255, 0.2), 0 6px 20px rgba(0,0,0,0.8);
+                border-color: rgba(161, 161, 170, 0.8);
+            }
+        }
+        .logo-img-float {
+            animation: floatLogo 5s ease-in-out infinite;
+        }
+        @keyframes floatLogo {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-3px) scale(1.02); }
+        }
+
+        /* Slider Animation Styles */
+        .carousel-track {
+            display: flex;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .carousel-slide {
+            min-width: 100%;
+            flex-shrink: 0;
+        }
+
+        /* Cursor Typewriter Animation */
+        .typing-cursor::after {
+            content: '|';
+            display: inline-block;
+            margin-left: 2px;
+            color: #e4e4e7;
+            animation: blink 0.8s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Scroll Reveal Animation Classes */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+        .reveal-on-scroll.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Card Hover Lift Effect */
+        .card-modern {
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .card-modern:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.7), 0 0 15px rgba(255, 255, 255, 0.08);
+            border-color: rgba(161, 161, 170, 0.5);
+        }
+
+        /* Nav Link Hover Glow Effect */
+        .nav-glow {
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: inline-block;
+        }
+        .nav-glow:hover {
+            color: #ffffff;
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.9), 0 0 22px rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        .nav-glow::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ffffff, transparent);
+            box-shadow: 0 0 10px #ffffff, 0 0 15px #ffffff;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+            border-radius: 9999px;
+        }
+        .nav-glow:hover::after {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-brand-dark text-neutral-100 font-sans antialiased selection:bg-neutral-700 selection:text-white relative overflow-x-hidden">
+
+    <!-- Interactive Ambient Mouse/Touch Spotlight (Ahora activo en celulares al tocar) -->
+    <div id="mouseGlow"></div>
+
+    <!-- Marca de agua universal y adaptable para celular y PC -->
+    <div class="fixed inset-0 pointer-events-none z-0 flex items-center justify-center opacity-[0.06] overflow-hidden">
+        <img src="foto1.jpeg" alt="Fondo Marca de Agua AudioSistemas ProEvent" class="w-[85vw] max-w-[700px] h-auto object-contain filter grayscale brightness-200">
+    </div>
+
+    <!-- Scroll Progress Indicator -->
+    <div id="scrollProgress" class="fixed top-0 left-0 h-1 bg-gradient-to-r from-neutral-400 via-white to-amber-400 z-[100] w-0 transition-all duration-100"></div>
+
+    <header id="mainHeader" class="fixed top-0 left-0 right-0 z-50 bg-[#121214]/95 backdrop-blur-md border-b border-neutral-800 transition-all duration-400 ease-in-out">
+        <!-- Top Social & Info Bar -->
+        <div id="topInfoBar" class="bg-neutral-900/80 border-b border-neutral-800/80 py-2 px-4 text-xs sm:text-sm transition-all duration-300 overflow-hidden max-h-12 opacity-100">
+            <div class="max-w-7xl mx-auto flex items-center justify-between">
+                <div class="flex items-center gap-6 text-neutral-400 font-medium">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-solid fa-phone text-neutral-300"></i>
+                        <span class="hidden sm:inline">+593 987 954 954</span>
+                    </span>
+                    <span class="hidden md:flex items-center gap-2">
+                        <i class="fa-solid fa-envelope text-amber-400"></i>
+                        <span>audiosistemasproevent@gmail.com</span>
+                    </span>
+                </div>
+                <!-- Social Media Top Links -->
+                <div class="flex items-center gap-4">
+                    <span class="text-xs uppercase font-bold text-neutral-400 hidden sm:inline tracking-wider">Síguenos:</span>
+                    <a href="https://facebook.com/AudiosistemasPro" target="_blank" rel="noopener noreferrer" class="text-[#1877F2] hover:opacity-80 transition-opacity text-sm" title="Facebook">
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </a>
+                    <a href="https://instagram.com/audiosistemasproeventos/" target="_blank" rel="noopener noreferrer" class="text-[#E4405F] hover:opacity-80 transition-opacity text-sm" title="Instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+                    <a href="https://www.tiktok.com/@audiosistemasproevent" target="_blank" rel="noopener noreferrer" class="text-neutral-300 hover:text-white transition-colors text-sm" title="TikTok">
+                        <i class="fa-brands fa-tiktok"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="headerContainer" class="max-w-7xl mx-auto px-4 sm:px-6 h-28 sm:h-36 flex items-center justify-between transition-all duration-300">
+            <!-- Logo Principal Dinámico con Animaciones Interactivas -->
+            <a href="#" id="logoWrapper" class="logo-box logo-glow flex items-center p-2.5 sm:p-3 px-4 sm:px-5 rounded-2xl border border-neutral-800 bg-neutral-900/80 hover:border-neutral-500 hover:scale-105 transition-all duration-300 group shadow-lg shadow-black/50">
+                <img id="headerLogo" 
+                     src="foto1.jpeg" 
+                     alt="AudioSistemas ProEvent Logo" 
+                     class="h-16 sm:h-28 w-auto object-contain logo-img-float transition-all duration-300 group-hover:brightness-110"
+                     onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                
+                <div class="hidden flex items-center gap-2">
+                    <span class="font-heading font-black text-lg text-white tracking-wider">AUDIO<span class="text-neutral-400">SISTEMAS PROEVENT</span></span>
+                </div>
+            </a>
+
+            <nav class="hidden md:flex items-center space-x-10 text-base font-bold text-neutral-300">
+                <a href="#inicio" class="nav-glow">Inicio</a>
+                <a href="#servicios" class="nav-glow">Servicios</a>
+                <a href="#galeria" class="nav-glow">Galería</a>
+                <a href="#nosotros" class="nav-glow">Nosotros</a>
+                <a href="#contacto" class="nav-glow">Contacto</a>
+            </nav>
+
+            <div class="hidden md:flex items-center">
+                <a href="https://wa.me/593987954954?text=Hola%20AudioSistemas%20ProEvent,%20deseo%20mas%20informacion%20y%20una%20cotizacion." 
+                   target="_blank" 
+                   class="px-6 py-3 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-900/30 transition-all hover:scale-105 flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-base text-white"></i>
+                    <span>Escribir por WhatsApp</span>
+                </a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobileMenuBtn" class="md:hidden text-neutral-300 hover:text-white p-2 text-3xl" aria-label="Menú">
+                <i class="fa-solid fa-bars" id="menuIcon"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobileMenu" class="hidden md:hidden bg-neutral-900 border-b border-neutral-800 px-6 py-6 space-y-4">
+            <a href="#inicio" class="block text-neutral-200 font-medium hover:text-white mobile-link">Inicio</a>
+            <a href="#servicios" class="block text-neutral-200 font-medium hover:text-white mobile-link">Servicios</a>
+            <a href="#galeria" class="block text-neutral-200 font-medium hover:text-white mobile-link">Galería</a>
+            <a href="#nosotros" class="block text-neutral-200 font-medium hover:text-white mobile-link">Nosotros</a>
+            <a href="#contacto" class="block text-neutral-200 font-medium hover:text-white mobile-link">Contacto</a>
+            <div class="pt-2">
+                <a href="https://wa.me/593987954954?text=Hola%20AudioSistemas%20ProEvent,%20deseo%20mas%20informacion." 
+                   target="_blank" 
+                   class="w-full py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold text-center block text-xs uppercase tracking-wider shadow-md shadow-green-900/30">
+                    <i class="fa-brands fa-whatsapp text-white text-sm mr-2"></i> WhatsApp Directo
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section id="inicio" class="pt-44 sm:pt-52 pb-16 min-h-[85vh] flex items-center bg-grid-pattern relative overflow-hidden z-10">
+        <!-- Interactive Soundwave Canvas -->
+        <canvas id="heroVisualizer" class="absolute inset-0 w-full h-full opacity-35 pointer-events-none z-0"></canvas>
+
+        <div class="absolute inset-0 bg-gradient-to-b from-neutral-900/40 via-transparent to-brand-dark pointer-events-none"></div>
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] sm:w-[600px] h-[220px] sm:h-[350px] bg-neutral-700/25 rounded-full blur-[80px] sm:blur-[120px] pointer-events-none"></div>
+
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center z-10 relative reveal-on-scroll">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-neutral-900/80 border border-neutral-800 text-xs text-neutral-300 font-medium mb-6 backdrop-blur-sm shadow-md">
+                <i class="fa-solid fa-star text-amber-400"></i>
+                <span>Alquiler e Instalación para Eventos</span>
+            </div>
+
+            <!-- Título Principal Animado con Efecto de Escritura y Resplandor -->
+            <div class="text-center max-w-3xl min-h-[120px] flex flex-col justify-center mx-auto mb-6">
+                <h1 id="titleTyped" class="font-heading text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-white leading-tight text-glow">
+                    <!-- Aparecerá mediante JavaScript -->
+                </h1>
+                <p id="subtitleTyped" class="font-heading text-lg sm:text-2xl font-bold animated-gradient uppercase tracking-wider mt-3 min-h-[32px]">
+                    <!-- Aparecerá mediante JavaScript -->
+                </p>
+            </div>
+
+            <p class="text-base sm:text-lg text-neutral-400 max-w-2xl mx-auto font-normal leading-relaxed mb-8">
+                Soluciones técnicas integrales para conciertos, eventos corporativos, bodas y fiestas. Montaje rápido, equipos de alta resolución y soporte técnico garantizado.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#contacto" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-sm tracking-wide uppercase shadow-lg shadow-white/5 hover:scale-105 transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-envelope text-amber-500"></i>
+                    <span>Solicitar Cotización</span>
+                </a>
+                <a href="https://wa.me/593987954954?text=Hola,%20deseo%20cotizar%20equipos%20para%20un%20evento" target="_blank" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-brand-card border border-neutral-800 hover:bg-neutral-800/80 text-white font-bold text-sm tracking-wide uppercase transition-all flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-green-500 text-base"></i>
+                    <span>Contactar por WhatsApp</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="servicios" class="py-16 bg-[#121214]/90 backdrop-blur-sm border-y border-neutral-800 relative z-10">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="text-center max-w-2xl mx-auto mb-12 reveal-on-scroll">
+                <span class="text-neutral-400 font-bold uppercase tracking-widest text-xs">Lo que ofrecemos</span>
+                <h2 class="font-heading text-2xl sm:text-4xl font-extrabold text-white mt-1">
+                    NUESTROS <span class="gradient-text">SERVICIOS</span>
+                </h2>
+                <p class="text-neutral-400 text-sm mt-2">Equipamiento técnico moderno listo para llevar tu evento al siguiente nivel.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Pantallas LED -->
+                <div class="p-6 rounded-2xl bg-brand-card/90 backdrop-blur-sm border border-neutral-800 card-modern flex flex-col justify-between group reveal-on-scroll">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-neutral-900 border border-neutral-700/60 text-white flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-tv"></i>
+                        </div>
+                        <h3 class="font-heading font-bold text-lg text-white mb-2">Pantallas LED Gigantes</h3>
+                        <p class="text-neutral-400 text-xs leading-relaxed mb-4">
+                            Pantallas Indoor, Outdoor y de piso.
+                        </p>
+                    </div>
+                    <ul class="text-xs text-neutral-300 space-y-2 pt-2 border-t border-neutral-800">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Medidas personalizadas</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Operador en vivo</li>
+                    </ul>
+                </div>
+
+                <!-- Sonido Pro -->
+                <div class="p-6 rounded-2xl bg-brand-card/90 backdrop-blur-sm border border-neutral-800 card-modern flex flex-col justify-between group reveal-on-scroll">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-neutral-900 border border-neutral-700/60 text-amber-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </div>
+                        <h3 class="font-heading font-bold text-lg text-white mb-2">Sistemas de Sonido</h3>
+                        <p class="text-neutral-400 text-xs leading-relaxed mb-4">
+                            Sistemas de audio Line Array, subwoofers y consolas digitales.
+                        </p>
+                    </div>
+                    <ul class="text-xs text-neutral-300 space-y-2 pt-2 border-t border-neutral-800">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Cobertura uniforme</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Micrófonos inalámbricos</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Ingenieros de audio</li>
+                    </ul>
+                </div>
+
+                <!-- Iluminación -->
+                <div class="p-6 rounded-2xl bg-brand-card/90 backdrop-blur-sm border border-neutral-800 card-modern flex flex-col justify-between group reveal-on-scroll">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-neutral-900 border border-neutral-700/60 text-yellow-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-lightbulb"></i>
+                        </div>
+                        <h3 class="font-heading font-bold text-lg text-white mb-2">Iluminación Escénica</h3>
+                        <p class="text-neutral-400 text-xs leading-relaxed mb-4">
+                            Luces robóticas Beam, bañadores LED y efectos especiales.
+                        </p>
+                    </div>
+                    <ul class="text-xs text-neutral-300 space-y-2 pt-2 border-t border-neutral-800">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Control DMX profesional</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Shows de luces</li>
+                    </ul>
+                </div>
+
+                <!-- Tarimas y Truss -->
+                <div class="p-6 rounded-2xl bg-brand-card/90 backdrop-blur-sm border border-neutral-800 card-modern flex flex-col justify-between group reveal-on-scroll">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-neutral-900 border border-neutral-700/60 text-indigo-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-layer-group"></i>
+                        </div>
+                        <h3 class="font-heading font-bold text-lg text-white mb-2">Tarimas & Estructuras</h3>
+                        <p class="text-neutral-400 text-xs leading-relaxed mb-4">
+                            Tarimas modulares antideslizantes y estructuras Truss de aluminio.
+                        </p>
+                    </div>
+                    <ul class="text-xs text-neutral-300 space-y-2 pt-2 border-t border-neutral-800">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Alturas ajustables</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Faldones elegantes</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Estructura segura</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="galeria" class="py-16 bg-brand-dark/80 backdrop-blur-sm border-b border-neutral-800 relative z-10">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6">
+            <div class="text-center max-w-2xl mx-auto mb-10 reveal-on-scroll">
+                <span class="text-neutral-400 font-bold uppercase tracking-widest text-xs">Portafolio</span>
+                <h2 class="font-heading text-2xl sm:text-4xl font-extrabold text-white mt-1">
+                    NUESTROS MONTAJES Y <span class="gradient-text">EVENTOS</span>
+                </h2>
+                <p class="text-neutral-400 text-sm mt-2">Muestra visual interactiva de algunos de nuestras instalaciones para ciertos eventos y conciertos.</p>
+            </div>
+
+            <!-- Carrusel Wrapper -->
+            <div id="galeriaCarousel" class="relative group rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-900 shadow-2xl shadow-black/80 reveal-on-scroll">
+                
+                <!-- Track de Diapositivas -->
+                <div id="carouselTrack" class="carousel-track">
+                    
+                    <!-- Slide 1 -->
+                    <div class="carousel-slide relative h-[320px] sm:h-[460px] md:h-[520px]">
+                        <img src="foto2.jpeg" 
+                             alt="Pantallas LED en evento corporativo" 
+                             class="w-full h-full object-cover"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=1200&auto=format&fit=crop';">
+                    </div>
+
+                    <!-- Slide 2 -->
+                    <div class="carousel-slide relative h-[320px] sm:h-[460px] md:h-[520px]">
+                        <img src="foto3.jpeg" 
+                             alt="Presentación en pantalla gigante LED" 
+                             class="w-full h-full object-cover"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1200&auto=format&fit=crop';">
+                    </div>
+
+                    <!-- Slide 3 -->
+                    <div class="carousel-slide relative h-[320px] sm:h-[460px] md:h-[520px]">
+                        <img src="foto4.jpeg" 
+                             alt="Estructura e iluminación para eventos" 
+                             class="w-full h-full object-cover"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=1200&auto=format&fit=crop';">
+                    </div>
+
+                    <!-- Slide 4 -->
+                    <div class="carousel-slide relative h-[320px] sm:h-[460px] md:h-[520px]">
+                        <img src="foto5.jpeg" 
+                             alt="Escenario con iluminación y pantalla LED" 
+                             class="w-full h-full object-cover"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1200&auto=format&fit=crop';">
+                    </div>
+
+                    <!-- Slide 5 -->
+                    <div class="carousel-slide relative h-[320px] sm:h-[460px] md:h-[520px]">
+                        <img src="foto6.jpeg" 
+                             alt="Montaje audiovisual para congreso" 
+                             class="w-full h-full object-cover"
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&auto=format&fit=crop';">
+                    </div>
+
+                </div>
+
+                <!-- Botones de Navegación -->
+                <button id="prevBtn" class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 text-white border border-white/20 flex items-center justify-center transition-all opacity-80 group-hover:opacity-100 hover:scale-110 z-10" aria-label="Anterior">
+                    <i class="fa-solid fa-chevron-left text-lg"></i>
+                </button>
+                <button id="nextBtn" class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 text-white border border-white/20 flex items-center justify-center transition-all opacity-80 group-hover:opacity-100 hover:scale-110 z-10" aria-label="Siguiente">
+                    <i class="fa-solid fa-chevron-right text-lg"></i>
+                </button>
+
+                <!-- Puntos Indicadores -->
+                <div id="carouselDots" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+                    <button class="dot w-2.5 h-2.5 rounded-full bg-white transition-all" aria-label="Ir a foto 1"></button>
+                    <button class="dot w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-white/80 transition-all" aria-label="Ir a foto 2"></button>
+                    <button class="dot w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-white/80 transition-all" aria-label="Ir a foto 3"></button>
+                    <button class="dot w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-white/80 transition-all" aria-label="Ir a foto 4"></button>
+                    <button class="dot w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-white/80 transition-all" aria-label="Ir a foto 5"></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="nosotros" class="py-16 bg-[#121214]/90 backdrop-blur-sm relative z-10">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center reveal-on-scroll">
+            <span class="text-xs font-bold uppercase tracking-widest text-neutral-400">Sobre Nosotros</span>
+            <h2 class="font-heading text-2xl sm:text-4xl font-black text-white mt-1 mb-4 leading-tight">
+                EXPERIENCIA Y <span class="gradient-text">COMPROMISO TÉCNICO</span>
+            </h2>
+            <p class="text-neutral-400 text-sm leading-relaxed mb-8">
+                En <strong class="text-white">AudioSistemas ProEvent</strong> contamos con más de 20 años de experiencia brindando respaldo técnico para eventos de todas las escalas. Nos aseguramos de que tu evento funcione a la perfección de principio a fin.
+            </p>
+
+            <div class="inline-flex flex-col sm:flex-row items-start sm:items-center justify-center gap-4 text-left">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-800 text-emerald-400 flex items-center justify-center font-bold text-sm shrink-0">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <span class="text-sm text-neutral-300">Personal técnico capacitado durante todo el evento</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-800 text-emerald-400 flex items-center justify-center font-bold text-sm shrink-0">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <span class="text-sm text-neutral-300">Puntualidad garantizada en montaje y pruebas</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-800 text-emerald-400 flex items-center justify-center font-bold text-sm shrink-0">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <span class="text-sm text-neutral-300">Cobertura en todo el país</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contacto" class="py-16 bg-[#121214]/90 backdrop-blur-sm border-t border-neutral-800 relative z-10">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6">
+            <div class="text-center max-w-2xl mx-auto mb-12 reveal-on-scroll">
+                <span class="text-xs font-bold uppercase tracking-widest text-neutral-400">Contáctanos</span>
+                <h2 class="font-heading text-2xl sm:text-4xl font-black text-white mt-1">
+                    SOLICITA TU <span class="gradient-text">COTIZACIÓN</span>
+                </h2>
+                <p class="text-neutral-400 text-sm mt-2">Escríbenos directamente o llena el formulario para responderte de inmediato.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Info cards -->
+                <div class="lg:col-span-5 space-y-4 reveal-on-scroll">
+                    <a href="https://wa.me/593987954954?text=Hola,%20deseo%20una%20cotizacion." target="_blank" class="block p-5 rounded-2xl bg-brand-card/90 backdrop-blur-sm border border-neutral-800 card-modern group">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-neutral-900 border border-neutral-700/60 text-green-500 flex items-center justify-center text-2xl">
+                                <i class="fa-brands fa-whatsapp"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs text-neutral-400 font-medium uppercase">WhatsApp Directo</div>
+                                <div class="font-bold text-white text-base group-hover:text-neutral-200 transition-colors">+593 987 954 954</div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <div class="p-5 rounded-2xl bg-brand-card/90 backdrop-blur-sm border border-neutral-800 card-modern">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-neutral-900 border border-neutral-700/60 text-sky-400 flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs text-neutral-400 font-medium uppercase">Teléfono de Contacto</div>
+                                <div class="font-bold text-white text-base">+593 987 954 954</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-brand-card/90 backdrop-blur-sm border border-neutral-800 card-modern">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-neutral-900 border border-neutral-700/60 text-amber-400 flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-envelope"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs text-neutral-400 font-medium uppercase">Correo Electrónico</div>
+                                <div class="font-bold text-white text-base">audiosistemasproevent@gmail.com</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Redes Sociales -->
+                    <div class="p-5 rounded-2xl bg-brand-card/90 backdrop-blur-sm border border-neutral-800 card-modern">
+                        <div class="text-xs text-neutral-400 font-medium uppercase mb-3">Síguenos en Redes Sociales</div>
+                        <div class="flex items-center gap-3">
+                            <a href="https://facebook.com/AudiosistemasPro" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-xl bg-neutral-900 border border-neutral-700/60 hover:border-[#1877F2] text-[#1877F2] flex items-center justify-center transition-all text-lg" title="Facebook">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+                            <a href="https://instagram.com/audiosistemasproeventos/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-xl bg-neutral-900 border border-neutral-700/60 hover:border-[#E4405F] text-[#E4405F] flex items-center justify-center transition-all text-lg" title="Instagram">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+                            <a href="https://www.tiktok.com/@audiosistemasproevent" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-xl bg-neutral-900 border border-neutral-700/60 hover:border-white text-neutral-300 hover:text-white flex items-center justify-center transition-all text-lg" title="TikTok">
+                                <i class="fa-brands fa-tiktok"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simple Contact Form -->
+                <div class="lg:col-span-7 bg-brand-card/90 backdrop-blur-sm rounded-2xl border border-neutral-800 p-6 sm:p-8 card-modern reveal-on-scroll">
+                    <form id="simpleContactForm" onsubmit="handleSubmit(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-neutral-300 mb-1">Nombre Completo *</label>
+                            <input id="formNombre" type="text" required placeholder="Tu nombre" class="w-full bg-[#18181b] border border-neutral-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-neutral-400">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-neutral-300 mb-1">Teléfono / WhatsApp *</label>
+                                <input id="formTelefono" type="tel" required placeholder="Ej: 0991234567" class="w-full bg-[#18181b] border border-neutral-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-neutral-400">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-neutral-300 mb-1">Fecha del Evento</label>
+                                <input id="formFecha" type="date" class="w-full bg-[#18181b] border border-neutral-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-neutral-400">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-neutral-300 mb-1">Mensaje o Equipos que necesitas</label>
+                            <textarea id="formMensaje" rows="3" placeholder="Ej: Necesito una pantalla LED de 4x2m y sonido para una boda de 150 personas..." class="w-full bg-[#18181b] border border-neutral-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-neutral-400"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full py-3.5 rounded-xl bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2">
+                            <i class="fa-brands fa-whatsapp text-green-600 text-base"></i>
+                            <span>Enviar Cotización a WhatsApp</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#0e0e10]/95 backdrop-blur-md border-t border-neutral-800 py-8 text-neutral-400 text-xs relative z-10">
+        <div class="max-w-5xl mx-auto px-4 text-center space-y-4">
+            
+            <!-- Logo Footer Dinámico -->
+            <div class="flex items-center justify-center">
+                <a href="#" class="logo-box inline-flex items-center p-2.5 px-5 rounded-2xl border border-neutral-800 bg-neutral-900/80 hover:border-neutral-600 transition-all duration-300">
+                    <img src="foto1.jpeg" 
+                         alt="AudioSistemas ProEvent Logo" 
+                         class="h-14 sm:h-20 w-auto object-contain logo-img-float"
+                         onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                    
+                    <div class="hidden flex items-center gap-2">
+                        <span class="font-heading font-bold text-sm text-white tracking-wider">AUDIO<span class="text-neutral-400">SISTEMAS</span> PROEVENT</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Redes Sociales Footer -->
+            <div class="flex items-center justify-center gap-5 text-lg pt-2">
+                <a href="https://facebook.com/AudiosistemasPro" target="_blank" rel="noopener noreferrer" class="text-[#1877F2] hover:opacity-80 transition-opacity" title="Facebook">
+                    <i class="fa-brands fa-facebook"></i>
+                </a>
+                <a href="https://instagram.com/audiosistemasproeventos/" target="_blank" rel="noopener noreferrer" class="text-[#E4405F] hover:opacity-80 transition-opacity" title="Instagram">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+                <a href="https://www.tiktok.com/@audiosistemasproevent" target="_blank" rel="noopener noreferrer" class="text-neutral-300 hover:text-white transition-colors" title="TikTok">
+                    <i class="fa-brands fa-tiktok"></i>
+                </a>
+            </div>
+
+            <p class="flex items-center justify-center gap-2">
+                <span>&copy; <span id="year"></span> AudioSistemas ProEvent. Todos los derechos reservados.</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Floating WhatsApp button -->
+    <a href="https://wa.me/593987954954?text=Hola,%20deseo%20una%20cotizacion." 
+       target="_blank" 
+       class="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-green-500 hover:bg-green-600 text-white flex items-center justify-center text-xl shadow-xl transition-all hover:scale-110"
+       aria-label="WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        /* Mouse & Touch Spotlight Effect (Soporte para toque táctil en móviles) */
+        const mouseGlow = document.getElementById('mouseGlow');
+        if (mouseGlow) {
+            // Ratón en PC
+            window.addEventListener('mousemove', (e) => {
+                mouseGlow.style.opacity = '1';
+                mouseGlow.style.left = e.clientX + 'px';
+                mouseGlow.style.top = e.clientY + 'px';
+            });
+
+            // Toque táctil en celulares
+            window.addEventListener('touchmove', (e) => {
+                if (e.touches && e.touches.length > 0) {
+                    mouseGlow.style.opacity = '1';
+                    mouseGlow.style.left = e.touches[0].clientX + 'px';
+                    mouseGlow.style.top = e.touches[0].clientY + 'px';
+                }
+            }, { passive: true });
+        }
+
+        /* Top Scroll Progress Indicator & Header Scroll Logic */
+        const scrollProgress = document.getElementById('scrollProgress');
+        const headerContainer = document.getElementById('headerContainer');
+        const headerLogo = document.getElementById('headerLogo');
+        const topInfoBar = document.getElementById('topInfoBar');
+        const logoWrapper = document.getElementById('logoWrapper');
+
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+            if (totalHeight > 0) {
+                const progress = (scrollY / totalHeight) * 100;
+                scrollProgress.style.width = `${progress}%`;
+            }
+
+            if (scrollY > 50) {
+                // Shrink state when scrolling
+                headerContainer.classList.remove('h-28', 'sm:h-36');
+                headerContainer.classList.add('h-20', 'sm:h-22');
+
+                headerLogo.classList.remove('h-16', 'sm:h-28');
+                headerLogo.classList.add('h-12', 'sm:h-16');
+
+                logoWrapper.classList.remove('p-2.5', 'sm:p-3', 'px-4', 'sm:px-5');
+                logoWrapper.classList.add('p-1.5', 'px-3');
+
+                topInfoBar.classList.add('max-h-0', 'opacity-0', 'py-0');
+                topInfoBar.classList.remove('max-h-12', 'opacity-100', 'py-2');
+            } else {
+                // Expanded state at top
+                headerContainer.classList.remove('h-20', 'sm:h-22');
+                headerContainer.classList.add('h-28', 'sm:h-36');
+
+                headerLogo.classList.remove('h-12', 'sm:h-16');
+                headerLogo.classList.add('h-16', 'sm:h-28');
+
+                logoWrapper.classList.remove('p-1.5', 'px-3');
+                logoWrapper.classList.add('p-2.5', 'sm:p-3', 'px-4', 'sm:px-5');
+
+                topInfoBar.classList.remove('max-h-0', 'opacity-0', 'py-0');
+                topInfoBar.classList.add('max-h-12', 'opacity-100', 'py-2');
+            }
+        });
+
+        /* Scroll Reveal Intersection Observer */
+        const revealElements = document.querySelectorAll('.reveal-on-scroll');
+        const observerOptions = {
+            root: null,
+            threshold: 0.08,
+            rootMargin: '0px 0px -20px 0px'
+        };
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                }
+            });
+        }, observerOptions);
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        /* Hero Soundwave Background Canvas Visualizer (Adaptable a celular) */
+        const canvas = document.getElementById('heroVisualizer');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let animationFrameId;
+
+            function resizeCanvas() {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            let step = 0;
+            function drawVisualizer() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                step += 0.02;
+
+                const isMobile = window.innerWidth < 640;
+                const bars = isMobile ? 28 : 52;
+                const barWidth = canvas.width / bars;
+
+                for (let i = 0; i < bars; i++) {
+                    const heightMultiplier = Math.sin(step + i * 0.2) * 0.5 + 0.5;
+                    const barHeight = (heightMultiplier * (canvas.height * (isMobile ? 0.28 : 0.38))) + 12;
+                    
+                    const x = i * barWidth;
+                    const y = canvas.height - barHeight;
+
+                    const gradient = ctx.createLinearGradient(0, canvas.height, 0, y);
+                    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.02)');
+                    gradient.addColorStop(0.5, 'rgba(228, 228, 231, 0.15)');
+                    gradient.addColorStop(1, 'rgba(255, 255, 255, 0.3)');
+
+                    ctx.fillStyle = gradient;
+                    const spacing = isMobile ? 2 : 4;
+                    ctx.fillRect(x + spacing/2, y, barWidth - spacing, barHeight);
+                }
+
+                animationFrameId = requestAnimationFrame(drawVisualizer);
+            }
+            drawVisualizer();
+        }
+
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuIcon = document.getElementById('menuIcon');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            const isHidden = mobileMenu.classList.contains('hidden');
+            if (isHidden) {
+                mobileMenu.classList.remove('hidden');
+                menuIcon.classList.remove('fa-bars');
+                menuIcon.classList.add('fa-xmark');
+            } else {
+                mobileMenu.classList.add('hidden');
+                menuIcon.classList.remove('fa-xmark');
+                menuIcon.classList.add('fa-bars');
+            }
+        });
+
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                menuIcon.classList.remove('fa-xmark');
+                menuIcon.classList.add('fa-bars');
+            });
+        });
+
+        /* Typewriter Animation */
+        const mainTitleText = "AudioSistemas ProEvent";
+        const subtitleText = "Pantallas LED, Sonido e Iluminación";
+
+        const titleTypedEl = document.getElementById('titleTyped');
+        const subtitleTypedEl = document.getElementById('subtitleTyped');
+
+        function startTypewriter() {
+            if (!titleTypedEl || !subtitleTypedEl) return;
+            
+            titleTypedEl.textContent = '';
+            subtitleTypedEl.textContent = '';
+            let i = 0;
+            let j = 0;
+
+            titleTypedEl.classList.add('typing-cursor');
+            
+            function typeMainTitle() {
+                if (i < mainTitleText.length) {
+                    titleTypedEl.textContent += mainTitleText.charAt(i);
+                    i++;
+                    setTimeout(typeMainTitle, 50);
+                } else {
+                    titleTypedEl.classList.remove('typing-cursor');
+                    subtitleTypedEl.classList.add('typing-cursor');
+                    setTimeout(typeSubtitle, 200);
+                }
+            }
+
+            function typeSubtitle() {
+                if (j < subtitleText.length) {
+                    subtitleTypedEl.textContent += subtitleText.charAt(j);
+                    j++;
+                    setTimeout(typeSubtitle, 40);
+                } else {
+                    setTimeout(() => {
+                        subtitleTypedEl.classList.remove('typing-cursor');
+                    }, 1200);
+                }
+            }
+
+            typeMainTitle();
+        }
+
+        if (document.readyState === 'complete') {
+            startTypewriter();
+        } else {
+            window.addEventListener('load', startTypewriter);
+        }
+
+        /* Image Carousel Logic */
+        const track = document.getElementById('carouselTrack');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const dots = document.querySelectorAll('.dot');
+        const carouselContainer = document.getElementById('galeriaCarousel');
+
+        let currentSlide = 0;
+        const totalSlides = dots.length;
+        let slideInterval;
+
+        function updateCarousel(index) {
+            currentSlide = (index + totalSlides) % totalSlides;
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+            dots.forEach((dot, i) => {
+                if (i === currentSlide) {
+                    dot.classList.remove('bg-white/40', 'w-2.5');
+                    dot.classList.add('bg-white', 'w-6');
+                } else {
+                    dot.classList.remove('bg-white', 'w-6');
+                    dot.classList.add('bg-white/40', 'w-2.5');
+                }
+            });
+        }
+
+        function nextSlide() {
+            updateCarousel(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            updateCarousel(currentSlide - 1);
+        }
+
+        function startAutoPlay() {
+            stopAutoPlay();
+            slideInterval = setInterval(nextSlide, 3000);
+        }
+
+        function stopAutoPlay() {
+            if (slideInterval) clearInterval(slideInterval);
+        }
+
+        nextBtn.addEventListener('click', () => {
+            nextSlide();
+            startAutoPlay();
+        });
+
+        prevBtn.addEventListener('click', () => {
+            prevSlide();
+            startAutoPlay();
+        });
+
+        dots.forEach((dot, idx) => {
+            dot.addEventListener('click', () => {
+                updateCarousel(idx);
+                startAutoPlay();
+            });
+        });
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        carouselContainer.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        carouselContainer.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchStartX - touchEndX > 40) {
+                nextSlide();
+            } else if (touchEndX - touchStartX > 40) {
+                prevSlide();
+            }
+            startAutoPlay();
+        }, { passive: true });
+
+        updateCarousel(0);
+        startAutoPlay();
+
+        /* Contact Form Handler */
+        function handleSubmit(e) {
+            e.preventDefault();
+            
+            const nombre = document.getElementById('formNombre').value.trim();
+            const telefono = document.getElementById('formTelefono').value.trim();
+            const fecha = document.getElementById('formFecha').value;
+            const mensaje = document.getElementById('formMensaje').value.trim();
+
+            let textoWhatsApp = `*NUEVA SOLICITUD DE COTIZACIÓN*%0A%0A`;
+            textoWhatsApp += `👤 *Nombre:* ${encodeURIComponent(nombre)}%0A`;
+            textoWhatsApp += `📞 *Teléfono:* ${encodeURIComponent(telefono)}%0A`;
+            
+            if (fecha) {
+                textoWhatsApp += `📅 *Fecha del Evento:* ${encodeURIComponent(fecha)}%0A`;
+            }
+            if (mensaje) {
+                textoWhatsApp += `💬 *Detalles / Requerimiento:*%0A${encodeURIComponent(mensaje)}%0A`;
+            }
+
+            const numeroWhatsApp = "593987954954";
+            const url = `https://wa.me/${numeroWhatsApp}?text=${textoWhatsApp}`;
+            
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
